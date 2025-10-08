@@ -18,16 +18,16 @@
                     <group>
                         <field name="cr_payment_method_line_ids" nolabel="1" context="{'default_move_id': active_id}">
                             <tree editable="bottom">
-                                <field name="payment_method"/>
+                                <field name="code"/>
                                 <field name="description"
-                                       attrs="{'invisible': [('payment_method', '!=', '99')], 'required': [('payment_method', '=', '99')]}"/>
+                                       attrs="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                                 <field name="amount" widget="monetary"/>
                             </tree>
                             <form>
                                 <group>
-                                    <field name="payment_method"/>
+                                    <field name="code"/>
                                     <field name="description"
-                                           attrs="{'invisible': [('payment_method', '!=', '99')], 'required': [('payment_method', '=', '99')]}"/>
+                                           attrs="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                                     <field name="amount" widget="monetary"/>
                                 </group>
                             </form>
