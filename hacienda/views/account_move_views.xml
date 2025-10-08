@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_move_form_hacienda" model="ir.ui.view">
+        <field name="name">account.move.form.hacienda</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Hacienda" name="cr_hacienda">
+                    <group>
+                        <group>
+                            <field name="cr_sale_condition"/>
+                            <field name="cr_sale_condition_other"
+                                   attrs="{'invisible': [('cr_sale_condition', '!=', '99')], 'required': [('cr_sale_condition', '=', '99')]}"/>
+                            <field name="cr_credit_term"
+                                   attrs="{'invisible': [('cr_sale_condition', 'not in', ('02', '10'))], 'required': [('cr_sale_condition', 'in', ('02', '10'))]}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="cr_payment_method_line_ids" nolabel="1" context="{'default_move_id': active_id}">
+                            <tree editable="bottom">
+                                <field name="sequence" invisible="1"/>
+                                <field name="payment_method"/>
+                                <field name="description"
+                                       attrs="{'invisible': [('payment_method', '!=', '99')], 'required': [('payment_method', '=', '99')]}"/>
+                                <field name="amount" widget="monetary"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="payment_method"/>
+                                    <field name="description"
+                                           attrs="{'invisible': [('payment_method', '!=', '99')], 'required': [('payment_method', '=', '99')]}"/>
+                                    <field name="amount" widget="monetary"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

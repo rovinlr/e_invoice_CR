@@ -21,9 +21,11 @@ class AccountJournal(models.Model):
             ("FE", "Factura Electrónica"),
             ("TE", "Tiquete Electrónico"),
             ("FEE", "Factura Electrónica de Exportación"),
+            ("FEC", "Factura Electrónica de Compra"),
             ("NC", "Nota de Crédito"),
             ("ND", "Nota de Débito"),
             ("CCE", "Confirmación de Comprobante Electrónico"),
             ("CPCE", "Confirmación Parcial"),
             ("RCE", "Rechazo de Comprobante"),
+            ("REP", "Recibo Electrónico de Pago"),
         ]
