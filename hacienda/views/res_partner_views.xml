@@ -10,7 +10,7 @@
                 <field name="hacienda_identification"/>
                 <button name="action_fetch_hacienda_identification" type="object" string="Consultar Hacienda" class="oe_highlight"/>
             </xpath>
-            <xpath expr="//group[@name='address']" position="inside">
+            <xpath expr="//group[.//field[@name='zip']]" position="inside">
                 <group string="Localización Hacienda">
                     <field name="hacienda_canton_id" options="{'no_create': False}"/>
                     <field name="hacienda_district_id" domain="[('canton_id', '=', hacienda_canton_id)]" options="{'no_create': False}"/>
