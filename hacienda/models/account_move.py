@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 import base64
 import logging
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal, ROUND_HALF_UP
-from xml.etree.ElementTree import Element, SubElement, tostring
+
+try:  # pragma: no cover - optional dependency provided at runtime
+    from lxml import etree
+except ImportError:  # pragma: no cover - we will raise a user error when needed
+    etree = None
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -13,6 +18,15 @@ _logger = logging.getLogger(__name__)
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+
+    HACIENDA_XMLNS = "https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica"
+    HACIENDA_SCHEMA_LOCATION = (
+        "https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica "
+        "https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica.xsd"
+    )
+    DS_NS = "http://www.w3.org/2000/09/xmldsig#"
+    XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
+    XADES_NS = "http://uri.etsi.org/01903/v1.3.2#"
 
     cr_sale_condition = fields.Selection(
         selection=lambda self: self._selection_cr_sale_condition(),
@@ -85,7 +99,7 @@ class AccountMove(models.Model):
     # -------------------------------------------------------------------------
 
     def _generate_hacienda_xml(self):
-        """Build a minimal XML representation that complies with Hacienda's structure."""
+        """Build, sign and return the Hacienda XML for this invoice."""
         self.ensure_one()
 
         if not self.name and not self.ref:
@@ -94,17 +108,17 @@ class AccountMove(models.Model):
         invoice_date = fields.Date.to_date(self.invoice_date or fields.Date.context_today(self))
         emission_datetime = datetime.combine(invoice_date, datetime.min.time())
         emission_date = fields.Datetime.context_timestamp(self, emission_datetime)
-        root = Element("FacturaElectronica")
-        SubElement(root, "Clave").text = self._compute_hacienda_key()
-        SubElement(root, "NumeroConsecutivo").text = self._compute_hacienda_sequence()
-        SubElement(root, "FechaEmision").text = emission_date.strftime("%Y-%m-%dT%H:%M:%S%z")
 
-        self._append_emitter(root)
-        self._append_receiver(root)
-        self._append_invoice_lines(root)
-        self._append_summary(root)
+        if etree is None:
+            raise UserError(
+                "No se pudo generar el XML para Hacienda porque falta la librería 'lxml'. "
+                "Instálela en el entorno de Odoo."
+            )
 
-        xml_bytes = tostring(root, encoding="utf-8", xml_declaration=True)
+        unsigned_tree = self._build_hacienda_xml_tree(emission_date)
+        signed_tree = self._sign_hacienda_xml_tree(unsigned_tree)
+
+        xml_bytes = etree.tostring(signed_tree, encoding="utf-8", xml_declaration=True)
         filename = f"{(self.name or self.ref).replace('/', '-')}.xml"
         return xml_bytes, filename
 
@@ -114,70 +128,226 @@ class AccountMove(models.Model):
     def _compute_hacienda_sequence(self):
         return (self.name or self.ref or "1").replace("/", "")
 
+    def _build_hacienda_xml_tree(self, emission_date):
+        nsmap = {
+            None: self.HACIENDA_XMLNS,
+            "ds": self.DS_NS,
+            "xsi": self.XSI_NS,
+            "xades": self.XADES_NS,
+        }
+        root = etree.Element("FacturaElectronica", nsmap=nsmap)
+        root.set(etree.QName(self.XSI_NS, "schemaLocation"), self.HACIENDA_SCHEMA_LOCATION)
+
+        self._append_header(root, emission_date)
+        self._append_emitter(root)
+        self._append_receiver(root)
+        self._append_sale_condition(root)
+        self._append_invoice_lines(root)
+        self._append_summary(root)
+        self._append_other_information(root)
+        return root
+
+    def _append_header(self, root, emission_date):
+        etree.SubElement(root, "Clave").text = self._compute_hacienda_key()
+        company = self.company_id
+        if company.hacienda_system_provider_code:
+            etree.SubElement(root, "ProveedorSistemas").text = company.hacienda_system_provider_code
+        if company.hacienda_activity_code:
+            etree.SubElement(root, "CodigoActividadEmisor").text = company.hacienda_activity_code
+        partner_activity = self.partner_id.hacienda_activity_code
+        if partner_activity:
+            etree.SubElement(root, "CodigoActividadReceptor").text = partner_activity
+        etree.SubElement(root, "NumeroConsecutivo").text = self._compute_hacienda_sequence()
+        etree.SubElement(root, "FechaEmision").text = self._format_datetime_with_timezone(emission_date)
+
     def _append_emitter(self, root):
         company = self.company_id
-        company_partner = company.partner_id
-        emisor = SubElement(root, "Emisor")
-        SubElement(emisor, "Nombre").text = company_partner.name or company.name or ""
-        if company_partner.hacienda_identification:
-            identificacion = SubElement(emisor, "Identificacion")
-            SubElement(identificacion, "Tipo").text = company_partner.hacienda_identification_type or ""
-            SubElement(identificacion, "Numero").text = company_partner.hacienda_identification
-        if company_partner.email:
-            SubElement(emisor, "CorreoElectronico").text = company_partner.email
+        partner = company.partner_id
+        emisor = etree.SubElement(root, "Emisor")
+        etree.SubElement(emisor, "Nombre").text = partner.name or company.name or ""
+        self._append_identification(emisor, partner)
+        if company.name and company.name != partner.name:
+            etree.SubElement(emisor, "NombreComercial").text = company.name
+        self._append_location(emisor, partner)
+        self._append_phone(emisor, partner)
+        if partner.email:
+            etree.SubElement(emisor, "CorreoElectronico").text = partner.email
 
     def _append_receiver(self, root):
         partner = self.partner_id
-        receptor = SubElement(root, "Receptor")
-        SubElement(receptor, "Nombre").text = partner.name or ""
-        if partner.hacienda_identification:
-            identificacion = SubElement(receptor, "Identificacion")
-            SubElement(identificacion, "Tipo").text = partner.hacienda_identification_type or ""
-            SubElement(identificacion, "Numero").text = partner.hacienda_identification
+        receptor = etree.SubElement(root, "Receptor")
+        etree.SubElement(receptor, "Nombre").text = partner.name or ""
+        self._append_identification(receptor, partner)
+        self._append_location(receptor, partner)
+        self._append_phone(receptor, partner)
         if partner.email:
-            SubElement(receptor, "CorreoElectronico").text = partner.email
+            etree.SubElement(receptor, "CorreoElectronico").text = partner.email
+
+    def _append_identification(self, node, partner):
+        if not partner.hacienda_identification:
+            return
+        identificacion = etree.SubElement(node, "Identificacion")
+        etree.SubElement(identificacion, "Tipo").text = partner.hacienda_identification_type or ""
+        etree.SubElement(identificacion, "Numero").text = partner.hacienda_identification
+
+    def _append_location(self, node, partner):
+        if not (
+            partner.state_id
+            or partner.hacienda_canton_id
+            or partner.hacienda_district_id
+            or partner.hacienda_neighborhood_id
+            or partner.street
+            or partner.street2
+        ):
+            return
+        ubicacion = etree.SubElement(node, "Ubicacion")
+        if partner.state_id:
+            etree.SubElement(ubicacion, "Provincia").text = self._clean_numeric_code(
+                partner.state_id.code or partner.state_id.name
+            )
+        if partner.hacienda_canton_id:
+            etree.SubElement(ubicacion, "Canton").text = self._clean_numeric_code(partner.hacienda_canton_id.code)
+        if partner.hacienda_district_id:
+            etree.SubElement(ubicacion, "Distrito").text = self._clean_numeric_code(partner.hacienda_district_id.code)
+        if partner.hacienda_neighborhood_id:
+            etree.SubElement(ubicacion, "Barrio").text = self._clean_numeric_code(partner.hacienda_neighborhood_id.code)
+        other_address = ", ".join(filter(None, [partner.street, partner.street2]))
+        if other_address:
+            etree.SubElement(ubicacion, "OtrasSenas").text = other_address
+
+    def _append_phone(self, node, partner):
+        phone_code, phone_number = self._get_partner_phone_components(partner)
+        if not phone_number:
+            return
+        telefono = etree.SubElement(node, "Telefono")
+        etree.SubElement(telefono, "CodigoPais").text = phone_code
+        etree.SubElement(telefono, "NumTelefono").text = phone_number
+
+    def _append_sale_condition(self, root):
+        condition = self.cr_sale_condition or "01"
+        etree.SubElement(root, "CondicionVenta").text = condition
+        if condition in {"02", "10"} and self.cr_credit_term:
+            etree.SubElement(root, "PlazoCredito").text = str(int(self.cr_credit_term))
 
     def _append_invoice_lines(self, root):
-        detalle = SubElement(root, "DetalleServicio")
+        detalle = etree.SubElement(root, "DetalleServicio")
         currency = self.currency_id
-        for index, line in enumerate(self.invoice_line_ids.filtered(lambda l: not l.display_type), start=1):
-            linea = SubElement(detalle, "LineaDetalle")
-            SubElement(linea, "NumeroLinea").text = str(index)
-            SubElement(linea, "Cantidad").text = self._format_decimal(line.quantity)
-            SubElement(linea, "UnidadMedida").text = line.product_uom_id.name or "Unid"
-            SubElement(linea, "Detalle").text = line.name or line.product_id.display_name or ""
-            SubElement(linea, "PrecioUnitario").text = self._format_decimal(line.price_unit, currency)
-            line_total = line.quantity * line.price_unit
-            SubElement(linea, "MontoTotal").text = self._format_decimal(line_total, currency)
-            discount = (line.discount or 0.0) / 100.0
-            discount_amount = line_total * discount
-            SubElement(linea, "MontoDescuento").text = self._format_decimal(discount_amount, currency)
-            SubElement(linea, "SubTotal").text = self._format_decimal(line.price_subtotal, currency)
-            impuestos = SubElement(linea, "Impuesto")
-            tax = line.tax_ids[:1]
-            tax_code = tax.cr_tax_type if tax else "00"
-            SubElement(impuestos, "Codigo").text = tax_code or "00"
-            SubElement(impuestos, "Monto").text = self._format_decimal(line.price_total - line.price_subtotal, currency)
-            SubElement(linea, "MontoTotalLinea").text = self._format_decimal(line.price_total, currency)
+        lines = self.invoice_line_ids.filtered(lambda l: not l.display_type)
+        for index, line in enumerate(lines, start=1):
+            linea = etree.SubElement(detalle, "LineaDetalle")
+            etree.SubElement(linea, "NumeroLinea").text = str(index)
+            product = line.product_id
+            if product and product.cabys_code_id:
+                etree.SubElement(linea, "CodigoCABYS").text = product.cabys_code_id.code
+            if product and product.default_code:
+                codigo_comercial = etree.SubElement(linea, "CodigoComercial")
+                etree.SubElement(codigo_comercial, "Tipo").text = "01"
+                etree.SubElement(codigo_comercial, "Codigo").text = product.default_code
+            etree.SubElement(linea, "Cantidad").text = self._format_decimal(line.quantity, digits=5)
+            unidad = (
+                product.hacienda_measurement_unit_id.code
+                if product and product.hacienda_measurement_unit_id
+                else (line.product_uom_id and line.product_uom_id.name) or "Unid"
+            )
+            etree.SubElement(linea, "UnidadMedida").text = unidad
+            description = line.name or (product.display_name if product else "")
+            etree.SubElement(linea, "Detalle").text = description
+            etree.SubElement(linea, "PrecioUnitario").text = self._format_decimal(line.price_unit, currency)
+            line_total = (line.quantity or 0.0) * (line.price_unit or 0.0)
+            etree.SubElement(linea, "MontoTotal").text = self._format_decimal(line_total, currency)
+            discount_rate = (line.discount or 0.0) / 100.0
+            discount_amount = line_total * discount_rate
+            etree.SubElement(linea, "MontoDescuento").text = self._format_decimal(discount_amount, currency)
+            etree.SubElement(linea, "SubTotal").text = self._format_decimal(line.price_subtotal, currency)
+            etree.SubElement(linea, "BaseImponible").text = self._format_decimal(line.price_subtotal, currency)
+            tax_amount = line.price_total - line.price_subtotal
+            if tax_amount or line.tax_ids:
+                impuestos = etree.SubElement(linea, "Impuesto")
+                tax = line.tax_ids[:1]
+                etree.SubElement(impuestos, "Codigo").text = (tax.cr_tax_type if tax else "00") or "00"
+                if tax and tax.cr_tax_rate:
+                    etree.SubElement(impuestos, "CodigoTarifaIVA").text = tax.cr_tax_rate
+                if tax:
+                    etree.SubElement(impuestos, "Tarifa").text = self._format_decimal(tax.amount, digits=2)
+                etree.SubElement(impuestos, "Monto").text = self._format_decimal(tax_amount, currency)
+            etree.SubElement(linea, "ImpuestoAsumidoEmisorFabrica").text = "0"
+            etree.SubElement(linea, "ImpuestoNeto").text = self._format_decimal(tax_amount, currency)
+            etree.SubElement(linea, "MontoTotalLinea").text = self._format_decimal(line.price_total, currency)
 
     def _append_summary(self, root):
-        resumen = SubElement(root, "ResumenFactura")
+        resumen = etree.SubElement(root, "ResumenFactura")
         currency = self.currency_id
-        SubElement(resumen, "CodigoMoneda").text = currency.name or "CRC"
-        currency_rate = getattr(self, "currency_rate", False) or (self.currency_id and self.currency_id.rate)
-        SubElement(resumen, "TipoCambio").text = self._format_decimal(currency_rate or 1.0)
+        if currency:
+            codigo_tipo_moneda = etree.SubElement(resumen, "CodigoTipoMoneda")
+            etree.SubElement(codigo_tipo_moneda, "CodigoMoneda").text = currency.name or "CRC"
+            currency_rate = getattr(self, "currency_rate", False) or (currency.rate if currency else 1.0)
+            etree.SubElement(codigo_tipo_moneda, "TipoCambio").text = self._format_decimal(currency_rate or 1.0)
         taxable, exempt = self._compute_taxable_and_exempt_amounts()
-        SubElement(resumen, "TotalServGravados").text = self._format_decimal(taxable, currency)
-        SubElement(resumen, "TotalServExentos").text = self._format_decimal(exempt, currency)
-        SubElement(resumen, "TotalMercanciasGravadas").text = self._format_decimal(0.0)
-        SubElement(resumen, "TotalMercanciasExentas").text = self._format_decimal(0.0)
-        SubElement(resumen, "TotalGravado").text = self._format_decimal(taxable, currency)
-        SubElement(resumen, "TotalExento").text = self._format_decimal(exempt, currency)
-        SubElement(resumen, "TotalVenta").text = self._format_decimal(self.amount_untaxed + self.amount_tax, currency)
-        SubElement(resumen, "TotalDescuentos").text = self._format_decimal(self._compute_total_discounts(), currency)
-        SubElement(resumen, "TotalVentaNeta").text = self._format_decimal(self.amount_untaxed, currency)
-        SubElement(resumen, "TotalImpuesto").text = self._format_decimal(self.amount_tax, currency)
-        SubElement(resumen, "TotalComprobante").text = self._format_decimal(self.amount_total, currency)
+        etree.SubElement(resumen, "TotalServGravados").text = self._format_decimal(taxable, currency)
+        etree.SubElement(resumen, "TotalServExentos").text = self._format_decimal(exempt, currency)
+        etree.SubElement(resumen, "TotalServExonerado").text = self._format_decimal(0.0, currency)
+        etree.SubElement(resumen, "TotalServNoSujeto").text = self._format_decimal(0.0, currency)
+        etree.SubElement(resumen, "TotalMercanciasGravadas").text = self._format_decimal(0.0, currency)
+        etree.SubElement(resumen, "TotalMercanciasExentas").text = self._format_decimal(0.0, currency)
+        etree.SubElement(resumen, "TotalMercExonerada").text = self._format_decimal(0.0, currency)
+        etree.SubElement(resumen, "TotalMercNoSujeta").text = self._format_decimal(0.0, currency)
+        etree.SubElement(resumen, "TotalGravado").text = self._format_decimal(taxable, currency)
+        etree.SubElement(resumen, "TotalExento").text = self._format_decimal(exempt, currency)
+        etree.SubElement(resumen, "TotalExonerado").text = self._format_decimal(0.0, currency)
+        total_discounts = self._compute_total_discounts()
+        etree.SubElement(resumen, "TotalVenta").text = self._format_decimal(
+            self.amount_untaxed + total_discounts, currency
+        )
+        etree.SubElement(resumen, "TotalDescuentos").text = self._format_decimal(total_discounts, currency)
+        etree.SubElement(resumen, "TotalVentaNeta").text = self._format_decimal(self.amount_untaxed, currency)
+        etree.SubElement(resumen, "TotalImpuesto").text = self._format_decimal(self.amount_tax, currency)
+        etree.SubElement(resumen, "TotalImpAsumEmisorFabrica").text = self._format_decimal(0.0, currency)
+        etree.SubElement(resumen, "TotalIVADevuelto").text = self._format_decimal(0.0, currency)
+        self._append_tax_breakdown(resumen, currency)
+        self._append_payment_methods(resumen, currency)
+        etree.SubElement(resumen, "TotalComprobante").text = self._format_decimal(self.amount_total, currency)
+
+    def _append_tax_breakdown(self, resumen, currency):
+        breakdown = defaultdict(lambda: Decimal("0.0"))
+        for line in self.invoice_line_ids.filtered(lambda l: not l.display_type):
+            if not line.tax_ids:
+                continue
+            price_unit = (line.price_unit or 0.0) * (1 - (line.discount or 0.0) / 100.0)
+            tax_data = line.tax_ids.compute_all(
+                price_unit,
+                currency=self.currency_id,
+                quantity=line.quantity,
+                product=line.product_id,
+                partner=self.partner_id,
+                is_refund=self.move_type in {"out_refund", "in_refund"},
+            )
+            for tax_result in tax_data.get("taxes", []):
+                tax = self.env["account.tax"].browse(tax_result.get("id"))
+                key = (tax.cr_tax_type or "", tax.cr_tax_rate or "")
+                breakdown[key] += Decimal(str(tax_result.get("amount", 0.0)))
+
+        for (tax_code, rate_code), amount in breakdown.items():
+            desglose = etree.SubElement(resumen, "TotalDesgloseImpuesto")
+            if tax_code:
+                etree.SubElement(desglose, "Codigo").text = tax_code
+            if rate_code:
+                etree.SubElement(desglose, "CodigoTarifaIVA").text = rate_code
+            etree.SubElement(desglose, "TotalMontoImpuesto").text = self._format_decimal(amount, currency)
+
+    def _append_payment_methods(self, resumen, currency):
+        for payment in self.cr_payment_method_line_ids:
+            medio = etree.SubElement(resumen, "MedioPago")
+            etree.SubElement(medio, "TipoMedioPago").text = payment.payment_method
+            if payment.amount:
+                etree.SubElement(medio, "MontoPago").text = self._format_decimal(payment.amount, currency)
+            if payment.description:
+                etree.SubElement(medio, "DetallePago").text = payment.description
+
+    def _append_other_information(self, root):
+        if not self.narration:
+            return
+        otros = etree.SubElement(root, "Otros")
+        etree.SubElement(otros, "OtroTexto").text = self.narration
 
     def _compute_total_discounts(self):
         total = sum(
@@ -196,12 +366,109 @@ class AccountMove(models.Model):
                 exempt += line.price_subtotal
         return taxable, exempt
 
-    def _format_decimal(self, value, currency=None):
+    def _format_decimal(self, value, currency=None, digits=None):
         if value is None:
             value = 0.0
-        precision = currency.decimal_places if currency and currency.decimal_places is not None else 5
-        quantize_value = Decimal(str(value)).quantize(Decimal("1." + "0" * precision), rounding=ROUND_HALF_UP)
-        return f"{quantize_value:.{precision}f}"
+        if isinstance(value, Decimal):
+            decimal_value = value
+        else:
+            decimal_value = Decimal(str(value))
+        if digits is None:
+            digits = currency.decimal_places if currency and currency.decimal_places is not None else 5
+        quantize_pattern = Decimal("1") if digits == 0 else Decimal("1." + "0" * digits)
+        quantized = decimal_value.quantize(quantize_pattern, rounding=ROUND_HALF_UP)
+        return f"{quantized:.{digits}f}"
+
+    def _format_datetime_with_timezone(self, dt):
+        if not dt:
+            return ""
+        tz = dt.strftime("%z") or ""
+        tz_formatted = f"{tz[:3]}:{tz[3:]}" if tz else ""
+        base = dt.strftime("%Y-%m-%dT%H:%M:%S")
+        return f"{base}{tz_formatted}"
+
+    @staticmethod
+    def _clean_numeric_code(value):
+        if not value:
+            return ""
+        digits = "".join(ch for ch in str(value) if ch.isdigit())
+        return digits or str(value)
+
+    def _get_partner_phone_components(self, partner):
+        phone = partner.phone or partner.mobile or ""
+        digits = "".join(ch for ch in phone if ch.isdigit())
+        country_code = partner.country_id and partner.country_id.phone_code or "506"
+        if digits.startswith("00"):
+            digits = digits.lstrip("0")
+        if country_code and digits.startswith(str(country_code)):
+            local_number = digits[len(str(country_code)) :]
+        elif len(digits) > 8:
+            local_number = digits[-8:]
+            country_code = digits[: len(digits) - 8]
+        else:
+            local_number = digits
+        return str(country_code or "506"), local_number
+
+    def _sign_hacienda_xml_tree(self, root):
+        company = self.company_id
+        if not company.hacienda_cert_key or not company.hacienda_certificate_pin:
+            raise UserError(
+                "Debe cargar la llave criptográfica y el PIN del certificado en Ajustes > Hacienda para firmar el XML."
+            )
+
+        try:  # pragma: no cover - heavy dependency handled at runtime
+            from signxml import DigestAlgorithm, methods, xades
+        except ImportError as exc:  # pragma: no cover
+            raise UserError(
+                "No se pudo firmar el XML. Instale la librería de Python 'signxml' en el entorno de Odoo."
+            ) from exc
+
+        try:  # pragma: no cover - handled at runtime
+            from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat, pkcs12
+        except ImportError as exc:
+            raise UserError(
+                "No se pudo firmar el XML. Instale la librería de Python 'cryptography' en el entorno de Odoo."
+            ) from exc
+
+        try:
+            p12_bytes = base64.b64decode(company.hacienda_cert_key)
+            private_key, cert, additional = pkcs12.load_key_and_certificates(
+                p12_bytes, (company.hacienda_certificate_pin or "").encode()
+            )
+        except Exception as exc:  # pragma: no cover - depends on runtime certificates
+            raise UserError(
+                "No se pudo leer el certificado criptográfico. Verifique que el archivo sea válido y el PIN sea correcto."
+            ) from exc
+
+        if not private_key or not cert:
+            raise UserError("El certificado proporcionado no contiene una llave privada válida.")
+
+        key_pem = private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+        cert_chain = [cert.public_bytes(Encoding.PEM)]
+        if additional:
+            cert_chain.extend(c.public_bytes(Encoding.PEM) for c in additional if c)
+
+        signer = xades.XAdESSigner(
+            method=methods.enveloped,
+            signature_algorithm="rsa-sha256",
+            digest_algorithm="sha256",
+            c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
+            signature_policy=xades.XAdESSignaturePolicy(
+                Identifier=self.HACIENDA_XMLNS,
+                Description="",
+                DigestMethod=DigestAlgorithm.SHA1,
+                DigestValue="Ohixl6upD6av8N7pEvDABhEL6hM=",
+            ),
+            claimed_roles=["ObligadoTributario"],
+            data_object_format=xades.XAdESDataObjectFormat(Description="", MimeType="text/xml"),
+        )
+
+        try:
+            signed_root = signer.sign(root, key=key_pem, cert=cert_chain, reference_uri="")
+        except Exception as exc:  # pragma: no cover - signing failures depend on runtime data
+            raise UserError("Ocurrió un error firmando el XML con el certificado indicado.") from exc
+
+        return signed_root
 
     @staticmethod
     def _selection_cr_sale_condition():

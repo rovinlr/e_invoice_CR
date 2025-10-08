@@ -15,6 +15,10 @@
                         <field name="hacienda_certificate_pin" password="True"/>
                         <field name="hacienda_cert_key" filename="hacienda_cert_key_filename" widget="binary" options="{'no_open': True}"/>
                     </group>
+                    <group>
+                        <field name="hacienda_system_provider_code" placeholder="3101225890"/>
+                        <field name="hacienda_activity_code" placeholder="602001"/>
+                    </group>
                 </div>
             </xpath>
         </field>
