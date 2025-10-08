@@ -3,7 +3,7 @@
     <record id="view_account_tax_form_hacienda" model="ir.ui.view">
         <field name="name">account.tax.form.hacienda</field>
         <field name="model">account.tax</field>
-        <field name="inherit_id" ref="account.view_account_tax_form"/>
+        <field name="inherit_id" ref="account.view_tax_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='options']" position="inside">
                 <group string="Hacienda">
