@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_res_config_settings_hacienda" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.hacienda</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.view_res_config_settings"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='settings']/div" position="inside">
+                <div class="app_settings_block" data-string="Hacienda" string="Hacienda" groups="base.group_system">
+                    <h2>Facturación electrónica Costa Rica</h2>
+                    <group>
+                        <field name="hacienda_api_base_url" placeholder="https://api.comprobanteselectronicos.go.cr"/>
+                        <field name="hacienda_username"/>
+                        <field name="hacienda_password" password="True"/>
+                        <field name="hacienda_certificate_pin" password="True"/>
+                        <field name="hacienda_cert_key" filename="hacienda_cert_key_filename" widget="binary" options="{'no_open': True}"/>
+                    </group>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

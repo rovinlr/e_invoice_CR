@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_hacienda_cabys_tree" model="ir.ui.view">
+        <field name="name">hacienda.cabys.tree</field>
+        <field name="model">hacienda.cabys</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="tax_rate"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hacienda_cabys_form" model="ir.ui.view">
+        <field name="name">hacienda.cabys.form</field>
+        <field name="model">hacienda.cabys</field>
+        <field name="arch" type="xml">
+            <form string="Código CABYS">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="tax_rate"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_measurement_unit_tree" model="ir.ui.view">
+        <field name="name">hacienda.measurement.unit.tree</field>
+        <field name="model">hacienda.measurement.unit</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="uom_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hacienda_measurement_unit_form" model="ir.ui.view">
+        <field name="name">hacienda.measurement.unit.form</field>
+        <field name="model">hacienda.measurement.unit</field>
+        <field name="arch" type="xml">
+            <form string="Unidad Hacienda">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="uom_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_canton_tree" model="ir.ui.view">
+        <field name="name">hacienda.canton.tree</field>
+        <field name="model">hacienda.canton</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="province_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hacienda_canton_form" model="ir.ui.view">
+        <field name="name">hacienda.canton.form</field>
+        <field name="model">hacienda.canton</field>
+        <field name="arch" type="xml">
+            <form string="Cantón">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="province_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_district_tree" model="ir.ui.view">
+        <field name="name">hacienda.district.tree</field>
+        <field name="model">hacienda.district</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="canton_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hacienda_district_form" model="ir.ui.view">
+        <field name="name">hacienda.district.form</field>
+        <field name="model">hacienda.district</field>
+        <field name="arch" type="xml">
+            <form string="Distrito">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="canton_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_neighborhood_tree" model="ir.ui.view">
+        <field name="name">hacienda.neighborhood.tree</field>
+        <field name="model">hacienda.neighborhood</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="district_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hacienda_neighborhood_form" model="ir.ui.view">
+        <field name="name">hacienda.neighborhood.form</field>
+        <field name="model">hacienda.neighborhood</field>
+        <field name="arch" type="xml">
+            <form string="Barrio">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="district_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
