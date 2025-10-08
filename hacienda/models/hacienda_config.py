@@ -11,6 +11,14 @@ class ResCompany(models.Model):
     hacienda_username = fields.Char(string="Usuario Hacienda")
     hacienda_password = fields.Char(string="Contraseña Hacienda")
     hacienda_certificate_pin = fields.Char(string="PIN Certificado")
+    hacienda_system_provider_code = fields.Char(
+        string="Código proveedor de sistemas",
+        help="Identificación del proveedor de sistemas según Hacienda (opcional).",
+    )
+    hacienda_activity_code = fields.Char(
+        string="Código actividad económica",
+        help="Código de actividad económica registrado ante Hacienda.",
+    )
 
 
 class HaciendaResConfigSettings(models.TransientModel):
@@ -22,3 +30,7 @@ class HaciendaResConfigSettings(models.TransientModel):
     hacienda_username = fields.Char(related="company_id.hacienda_username", readonly=False)
     hacienda_password = fields.Char(related="company_id.hacienda_password", readonly=False)
     hacienda_certificate_pin = fields.Char(related="company_id.hacienda_certificate_pin", readonly=False)
+    hacienda_system_provider_code = fields.Char(
+        related="company_id.hacienda_system_provider_code", readonly=False
+    )
+    hacienda_activity_code = fields.Char(related="company_id.hacienda_activity_code", readonly=False)

@@ -7,6 +7,7 @@
     "author": "OpenAI Assistant",
     "website": "https://www.hacienda.go.cr/",
     "license": "LGPL-3",
+    "external_dependencies": {"python": ["signxml", "cryptography", "lxml"]},
     "depends": [
         "base",
         "account",

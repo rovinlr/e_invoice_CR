@@ -27,6 +27,10 @@ class ResPartner(models.Model):
         string="Barrio",
         help="Barrio según el catálogo oficial de Hacienda.",
     )
+    hacienda_activity_code = fields.Char(
+        string="Código actividad económica",
+        help="Código de actividad según el registro de Hacienda.",
+    )
     hacienda_identification_type = fields.Selection(
         selection=lambda self: self.env["res.partner"]._selection_hacienda_identification_type(),
         string="Tipo de identificación Hacienda",

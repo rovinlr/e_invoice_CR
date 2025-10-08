@@ -15,6 +15,7 @@
                     <field name="hacienda_canton_id" options="{'no_create': False}"/>
                     <field name="hacienda_district_id" domain="[('canton_id', '=', hacienda_canton_id)]" options="{'no_create': False}"/>
                     <field name="hacienda_neighborhood_id" domain="[('district_id', '=', hacienda_district_id)]" options="{'no_create': False}"/>
+                    <field name="hacienda_activity_code"/>
                 </group>
             </xpath>
         </field>
