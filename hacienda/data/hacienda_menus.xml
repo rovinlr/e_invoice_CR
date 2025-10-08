@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_hacienda_root" name="Hacienda" sequence="60" parent="account.menu_finance"/>
+
+    <record id="action_hacienda_electronic_documents" model="ir.actions.act_window">
+        <field name="name">Comprobantes electrónicos</field>
+        <field name="res_model">hacienda.electronic.document</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_hacienda_documents" name="Comprobantes" parent="menu_hacienda_root" action="action_hacienda_electronic_documents"/>
+
+    <record id="action_hacienda_config_settings" model="ir.actions.act_window">
+        <field name="name">Configuración Hacienda</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'module' : 'hacienda', 'default_hacienda_api_base_url': True}</field>
+    </record>
+
+    <menuitem id="menu_hacienda_configuration" name="Configuración" parent="menu_hacienda_root" sequence="20" action="action_hacienda_config_settings"/>
+
+    <record id="action_hacienda_cabys" model="ir.actions.act_window">
+        <field name="name">Catálogo CABYS</field>
+        <field name="res_model">hacienda.cabys</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_hacienda_cabys" name="CABYS" parent="menu_hacienda_root" sequence="30" action="action_hacienda_cabys"/>
+
+    <record id="action_hacienda_measurement_units" model="ir.actions.act_window">
+        <field name="name">Unidades Hacienda</field>
+        <field name="res_model">hacienda.measurement.unit</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_hacienda_measurement_units" name="Unidades de Medida" parent="menu_hacienda_root" sequence="40" action="action_hacienda_measurement_units"/>
+
+    <record id="action_hacienda_cantons" model="ir.actions.act_window">
+        <field name="name">Cantones</field>
+        <field name="res_model">hacienda.canton</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_hacienda_districts" model="ir.actions.act_window">
+        <field name="name">Distritos</field>
+        <field name="res_model">hacienda.district</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_hacienda_neighborhoods" model="ir.actions.act_window">
+        <field name="name">Barrios</field>
+        <field name="res_model">hacienda.neighborhood</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_hacienda_geo" name="Ubicaciones" parent="menu_hacienda_root" sequence="50"/>
+    <menuitem id="menu_hacienda_geo_cantons" name="Cantones" parent="menu_hacienda_geo" action="action_hacienda_cantons"/>
+    <menuitem id="menu_hacienda_geo_districts" name="Distritos" parent="menu_hacienda_geo" action="action_hacienda_districts"/>
+    <menuitem id="menu_hacienda_geo_neighborhoods" name="Barrios" parent="menu_hacienda_geo" action="action_hacienda_neighborhoods"/>
+</odoo>

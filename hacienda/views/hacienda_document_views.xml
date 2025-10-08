@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_hacienda_electronic_document_tree" model="ir.ui.view">
+        <field name="name">hacienda.electronic.document.tree</field>
+        <field name="model">hacienda.electronic.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="move_id"/>
+                <field name="journal_id"/>
+                <field name="state"/>
+                <field name="send_date"/>
+                <field name="response_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hacienda_electronic_document_form" model="ir.ui.view">
+        <field name="name">hacienda.electronic.document.form</field>
+        <field name="model">hacienda.electronic.document</field>
+        <field name="arch" type="xml">
+            <form string="Documento electrónico">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="move_id" options="{'no_open': False}"/>
+                        <field name="journal_id" readonly="1"/>
+                        <field name="state"/>
+                        <field name="send_date"/>
+                        <field name="response_date"/>
+                        <field name="message" widget="text" placeholder="Mensaje devuelto por Hacienda"/>
+                    </group>
+                    <notebook>
+                        <page string="XML enviado">
+                            <field name="xml_filename" readonly="1"/>
+                            <field name="xml_file" filename="xml_filename" widget="binary" options="{'no_create': True}"/>
+                        </page>
+                        <page string="Respuesta Hacienda">
+                            <field name="xml_response_filename" readonly="1"/>
+                            <field name="xml_response" filename="xml_response_filename" widget="binary" options="{'no_create': True}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

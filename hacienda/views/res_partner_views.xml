@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_res_partner_form_hacienda" model="ir.ui.view">
+        <field name="name">res.partner.form.hacienda</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="hacienda_identification_type"/>
+                <field name="hacienda_identification"/>
+                <button name="action_fetch_hacienda_identification" type="object" string="Consultar Hacienda" class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//group[@name='address']" position="inside">
+                <group string="Localización Hacienda">
+                    <field name="hacienda_canton_id" options="{'no_create': False}"/>
+                    <field name="hacienda_district_id" domain="[('canton_id', '=', hacienda_canton_id)]" options="{'no_create': False}"/>
+                    <field name="hacienda_neighborhood_id" domain="[('district_id', '=', hacienda_district_id)]" options="{'no_create': False}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
