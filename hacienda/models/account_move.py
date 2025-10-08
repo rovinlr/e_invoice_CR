@@ -337,7 +337,7 @@ class AccountMove(models.Model):
     def _append_payment_methods(self, resumen, currency):
         for payment in self.cr_payment_method_line_ids:
             medio = etree.SubElement(resumen, "MedioPago")
-            etree.SubElement(medio, "TipoMedioPago").text = payment.payment_method
+            etree.SubElement(medio, "TipoMedioPago").text = payment.code
             if payment.amount:
                 etree.SubElement(medio, "MontoPago").text = self._format_decimal(payment.amount, currency)
             if payment.description:
@@ -542,9 +542,9 @@ class HaciendaMovePaymentMethod(models.Model):
         required=True,
         ondelete="cascade",
     )
-    payment_method = fields.Selection(
+    code = fields.Selection(
         selection=lambda self: self._selection_hacienda_payment_method(),
-        string="Medio de pago",
+        string="Código del medio de pago",
         required=True,
     )
     description = fields.Char(
@@ -582,10 +582,10 @@ class HaciendaMovePaymentMethod(models.Model):
             ("99", "Otros"),
         ]
 
-    @api.constrains("payment_method", "description")
+    @api.constrains("code", "description")
     def _check_description_required(self):
         for line in self:
-            if line.payment_method == "99" and not line.description:
+            if line.code == "99" and not line.description:
                 raise ValidationError(
                     "Debe indicar el detalle del medio de pago cuando utilice el código 'Otros'."
                 )
