@@ -80,12 +80,18 @@ class ResPartner(models.Model):
 
             address = data.get("direccion") or {}
             if address:
-                partner_values.update(
-                    {
-                        "street": address.get("linea1") or address.get("street"),
-                        "zip": address.get("codigo_postal") or address.get("zip"),
-                    }
-                )
+                address_values = {}
+
+                street_value = address.get("linea1") or address.get("street")
+                if street_value:
+                    address_values["street"] = street_value
+
+                zip_value = address.get("codigo_postal") or address.get("zip")
+                if zip_value:
+                    address_values["zip"] = zip_value
+
+                if address_values:
+                    partner_values.update(address_values)
                 canton_code = address.get("canton")
                 district_code = address.get("distrito")
                 neighborhood_code = address.get("barrio")
