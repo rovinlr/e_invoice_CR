@@ -7,7 +7,12 @@
     "author": "OpenAI Assistant",
     "website": "https://www.hacienda.go.cr/",
     "license": "LGPL-3",
-    "external_dependencies": {"python": ["signxml", "cryptography", "lxml"]},
+    # ``signxml`` is imported lazily only when generating signed XML payloads.
+    # Leaving it out of the external dependency list prevents the module
+    # installation from failing on instances where the package is not yet
+    # available (e.g., minimal staging environments).  Users will still receive
+    # a clear error message at runtime if the optional dependency is missing.
+    "external_dependencies": {"python": ["cryptography", "lxml"]},
     "depends": [
         "base",
         "account",
