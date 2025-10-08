@@ -36,11 +36,12 @@ class ResPartner(models.Model):
     @staticmethod
     def _selection_hacienda_identification_type():
         return [
-            ("fisica", "Cédula Física"),
-            ("juridica", "Cédula Jurídica"),
-            ("dimex", "DIMEX"),
-            ("nite", "NITE"),
-            ("extranjero", "Identificación Extranjera"),
+            ("01", "Cédula Física"),
+            ("02", "Cédula Jurídica"),
+            ("03", "DIMEX"),
+            ("04", "NITE"),
+            ("05", "Extranjero No Domiciliado"),
+            ("06", "No Contribuyente"),
         ]
 
     def action_fetch_hacienda_identification(self):

@@ -19,20 +19,30 @@ class AccountTax(models.Model):
     @staticmethod
     def _selection_cr_tax_type():
         return [
-            ("IVA", "Impuesto al Valor Agregado"),
-            ("ISC", "Impuesto Selectivo de Consumo"),
-            ("IM", "Impuesto Municipal"),
-            ("OT", "Otros"),
+            ("01", "Impuesto al Valor Agregado"),
+            ("02", "Impuesto Selectivo de Consumo"),
+            ("03", "Impuesto Único a los Combustibles"),
+            ("04", "Impuesto específico de Bebidas Alcohólicas"),
+            ("05", "Impuesto Específico a Bebidas sin Alcohol y Jabones"),
+            ("06", "Impuesto a los Productos de Tabaco"),
+            ("07", "IVA (cálculo especial)"),
+            ("08", "IVA Régimen de Bienes Usados (Factor)"),
+            ("12", "Impuesto Específico al Cemento"),
+            ("99", "Otros"),
         ]
 
     @staticmethod
     def _selection_cr_tax_rate():
         return [
-            ("exento", "Exento"),
-            ("0", "0%"),
-            ("1", "1%"),
-            ("2", "2%"),
-            ("4", "4%"),
-            ("8", "8%"),
-            ("13", "13%"),
+            ("01", "Tarifa 0% (Art. 32 RLIVA)"),
+            ("02", "Tarifa reducida 1%"),
+            ("03", "Tarifa reducida 2%"),
+            ("04", "Tarifa reducida 4%"),
+            ("05", "Tarifa transitoria 0%"),
+            ("06", "Tarifa transitoria 4%"),
+            ("07", "Tarifa transitoria 8%"),
+            ("08", "Tarifa general 13%"),
+            ("09", "Tarifa reducida 0.5%"),
+            ("10", "Tarifa exenta"),
+            ("11", "Tarifa 0% sin derecho a crédito"),
         ]
