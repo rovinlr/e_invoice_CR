@@ -5,11 +5,13 @@
         <field name="model">account.journal</field>
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='invoicing']" position="inside">
-                <group string="Hacienda">
-                    <field name="cr_use_xml_44"/>
-                    <field name="cr_electronic_document_type" attrs="{'required': [('cr_use_xml_44', '=', True)]}"/>
-                </group>
+            <xpath expr="//sheet/notebook" position="inside">
+                <page name="hacienda_settings" string="Hacienda">
+                    <group>
+                        <field name="cr_use_xml_44"/>
+                        <field name="cr_electronic_document_type" attrs="{'required': [('cr_use_xml_44', '=', True)]}"/>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>
