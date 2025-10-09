@@ -3,13 +3,13 @@
         <field name="name">hacienda.move.payment.method.tree</field>
         <field name="model">hacienda.move.payment.method</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
+            <tree editable="bottom">
                 <field name="code"/>
                 <field name="description">
                     <attribute name="modifiers">{"invisible": [["code", "!=", "99"]], "required": [["code", "=", "99"]]}</attribute>
                 </field>
                 <field name="amount" widget="monetary"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -49,13 +49,13 @@
                     </group>
                     <group>
                         <field name="cr_payment_method_line_ids" nolabel="1" context="{'default_move_id': active_id}">
-                            <list editable="bottom">
+                            <tree editable="bottom">
                                 <field name="code"/>
                                 <field name="description">
                                     <attribute name="modifiers">{"invisible": [["code", "!=", "99"]], "required": [["code", "=", "99"]]}</attribute>
                                 </field>
                                 <field name="amount" widget="monetary"/>
-                            </list>
+                            </tree>
                             <form>
                                 <group>
                                     <field name="code"/>
