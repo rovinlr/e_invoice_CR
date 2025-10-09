@@ -1,13 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="view_move_payment_method_tree" model="ir.ui.view">
-        <field name="name">hacienda.move.payment.method.tree</field>
+        <field name="name">hacienda.move.payment.method.list</field>
         <field name="model">hacienda.move.payment.method</field>
         <field name="arch" type="xml">
             <list editable="bottom">
+                <field name="sequence" widget="handle" optional="hide"/>
                 <field name="code"/>
-                <field name="description">
-                    <attribute name="modifiers">{"invisible": [["code", "!=", "99"]], "required": [["code", "=", "99"]]}</attribute>
-                </field>
+                <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
                 <field name="amount" widget="monetary"/>
             </list>
         </field>
@@ -19,10 +19,9 @@
         <field name="arch" type="xml">
             <form>
                 <group>
+                    <field name="sequence" widget="handle" optional="hide"/>
                     <field name="code"/>
-                    <field name="description">
-                        <attribute name="modifiers">{"invisible": [["code", "!=", "99"]], "required": [["code", "=", "99"]]}</attribute>
-                    </field>
+                    <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
                     <field name="amount" widget="monetary"/>
                 </group>
             </form>
@@ -39,29 +38,23 @@
                     <group>
                         <group>
                             <field name="cr_sale_condition"/>
-                            <field name="cr_sale_condition_other">
-                                <attribute name="modifiers">{"invisible": [["cr_sale_condition", "!=", "99"]], "required": [["cr_sale_condition", "=", "99"]]}</attribute>
-                            </field>
-                            <field name="cr_credit_term">
-                                <attribute name="modifiers">{"invisible": [["cr_sale_condition", "not in", ["02", "10"]]], "required": [["cr_sale_condition", "in", ["02", "10"]]]}</attribute>
-                            </field>
+                            <field name="cr_sale_condition_other" modifiers="{'invisible': [['cr_sale_condition','!=','99']], 'required': [['cr_sale_condition','=','99']]}"/>
+                            <field name="cr_credit_term" modifiers="{'invisible': [['cr_sale_condition','not in',['02','10']]], 'required': [['cr_sale_condition','in',['02','10']]]}"/>
                         </group>
                     </group>
                     <group>
                         <field name="cr_payment_method_line_ids" nolabel="1" context="{'default_move_id': active_id}">
                             <list editable="bottom">
+                                <field name="sequence" widget="handle" optional="hide"/>
                                 <field name="code"/>
-                                <field name="description">
-                                    <attribute name="modifiers">{"invisible": [["code", "!=", "99"]], "required": [["code", "=", "99"]]}</attribute>
-                                </field>
+                                <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
                                 <field name="amount" widget="monetary"/>
                             </list>
                             <form>
                                 <group>
+                                    <field name="sequence" widget="handle" optional="hide"/>
                                     <field name="code"/>
-                                    <field name="description">
-                                        <attribute name="modifiers">{"invisible": [["code", "!=", "99"]], "required": [["code", "=", "99"]]}</attribute>
-                                    </field>
+                                    <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
                                     <field name="amount" widget="monetary"/>
                                 </group>
                             </form>
