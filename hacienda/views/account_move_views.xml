@@ -4,8 +4,8 @@
         <field name="model">hacienda.move.payment.method</field>
         <field name="arch" type="xml">
             <list editable="bottom">
-                <field name="payment_method"/>
-                <field name="description" attrs="{'invisible': [('payment_method', '!=', '99')], 'required': [('payment_method', '=', '99')]}"/>
+                <field name="code"/>
+                <field name="description" attrs="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                 <field name="amount" widget="monetary"/>
             </list>
         </field>
@@ -17,8 +17,8 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="payment_method"/>
-                    <field name="description" attrs="{'invisible': [('payment_method', '!=', '99')], 'required': [('payment_method', '=', '99')]}"/>
+                    <field name="code"/>
+                    <field name="description" attrs="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                     <field name="amount" widget="monetary"/>
                 </group>
             </form>
