@@ -5,7 +5,7 @@
     <record id="action_hacienda_electronic_documents" model="ir.actions.act_window">
         <field name="name">Comprobantes electrónicos</field>
         <field name="res_model">hacienda.electronic.document</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_hacienda_documents" name="Comprobantes" parent="menu_hacienda_root" action="action_hacienda_electronic_documents"/>
@@ -23,7 +23,7 @@
     <record id="action_hacienda_cabys" model="ir.actions.act_window">
         <field name="name">Catálogo CABYS</field>
         <field name="res_model">hacienda.cabys</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_hacienda_cabys" name="CABYS" parent="menu_hacienda_root" sequence="30" action="action_hacienda_cabys"/>
@@ -31,7 +31,7 @@
     <record id="action_hacienda_measurement_units" model="ir.actions.act_window">
         <field name="name">Unidades Hacienda</field>
         <field name="res_model">hacienda.measurement.unit</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_hacienda_measurement_units" name="Unidades de Medida" parent="menu_hacienda_root" sequence="40" action="action_hacienda_measurement_units"/>
@@ -39,19 +39,19 @@
     <record id="action_hacienda_cantons" model="ir.actions.act_window">
         <field name="name">Cantones</field>
         <field name="res_model">hacienda.canton</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="action_hacienda_districts" model="ir.actions.act_window">
         <field name="name">Distritos</field>
         <field name="res_model">hacienda.district</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="action_hacienda_neighborhoods" model="ir.actions.act_window">
         <field name="name">Barrios</field>
         <field name="res_model">hacienda.neighborhood</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_hacienda_geo" name="Ubicaciones" parent="menu_hacienda_root" sequence="50"/>
