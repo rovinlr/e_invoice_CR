@@ -44,7 +44,7 @@
                     </group>
                     <group>
                         <field name="cr_payment_method_line_ids" nolabel="1" context="{'default_move_id': active_id}">
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="code"/>
                                 <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
                                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
