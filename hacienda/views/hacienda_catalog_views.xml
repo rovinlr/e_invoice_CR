@@ -4,12 +4,12 @@
         <field name="name">hacienda.cabys.list</field>
         <field name="model">hacienda.cabys</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="tax_rate"/>
                 <field name="active"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -34,11 +34,11 @@
         <field name="name">hacienda.measurement.unit.list</field>
         <field name="model">hacienda.measurement.unit</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="uom_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -62,11 +62,11 @@
         <field name="name">hacienda.canton.list</field>
         <field name="model">hacienda.canton</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="province_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -90,11 +90,11 @@
         <field name="name">hacienda.district.list</field>
         <field name="model">hacienda.district</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="canton_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -118,11 +118,11 @@
         <field name="name">hacienda.neighborhood.list</field>
         <field name="model">hacienda.neighborhood</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="district_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
