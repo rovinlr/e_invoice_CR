@@ -30,6 +30,7 @@
         "views/hacienda_config_views.xml",
         "views/hacienda_document_views.xml",
         "views/hacienda_catalog_views.xml",
+        "views/uom_uom_views.xml",
     ],
     "application": True,
 }

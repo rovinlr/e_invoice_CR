@@ -6,3 +6,4 @@ from . import res_partner
 from . import hacienda_config
 from . import hacienda_document
 from . import hacienda_catalog
+from . import uom_uom
