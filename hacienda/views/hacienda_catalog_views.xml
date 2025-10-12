@@ -5,12 +5,12 @@
         <field name="model">hacienda.cabys</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="tax_rate"/>
                 <field name="active"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -36,11 +36,11 @@
         <field name="model">hacienda.measurement.unit</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="uom_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -65,11 +65,11 @@
         <field name="model">hacienda.canton</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="province_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -94,11 +94,11 @@
         <field name="model">hacienda.district</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="canton_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -123,11 +123,11 @@
         <field name="model">hacienda.neighborhood</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="district_id"/>
-            </list>
+            </tree>
         </field>
     </record>
 
