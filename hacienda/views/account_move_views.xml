@@ -48,7 +48,7 @@
                                 <field name="code"/>
                                 <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
                                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            </tree>
+                            </list>
                             <form>
                                 <group>
                                     <field name="sequence" widget="handle" optional="hide"/>
