@@ -3,7 +3,6 @@
     <record id="view_hacienda_cabys_tree" model="ir.ui.view">
         <field name="name">hacienda.cabys.list</field>
         <field name="model">hacienda.cabys</field>
-        <field name="type">list</field>
         <field name="arch" type="xml">
             <list>
                 <field name="code"/>
@@ -34,7 +33,6 @@
     <record id="view_hacienda_measurement_unit_tree" model="ir.ui.view">
         <field name="name">hacienda.measurement.unit.list</field>
         <field name="model">hacienda.measurement.unit</field>
-        <field name="type">list</field>
         <field name="arch" type="xml">
             <list>
                 <field name="code"/>
@@ -63,7 +61,6 @@
     <record id="view_hacienda_canton_tree" model="ir.ui.view">
         <field name="name">hacienda.canton.list</field>
         <field name="model">hacienda.canton</field>
-        <field name="type">list</field>
         <field name="arch" type="xml">
             <list>
                 <field name="code"/>
@@ -92,7 +89,6 @@
     <record id="view_hacienda_district_tree" model="ir.ui.view">
         <field name="name">hacienda.district.list</field>
         <field name="model">hacienda.district</field>
-        <field name="type">list</field>
         <field name="arch" type="xml">
             <list>
                 <field name="code"/>
@@ -121,7 +117,6 @@
     <record id="view_hacienda_neighborhood_tree" model="ir.ui.view">
         <field name="name">hacienda.neighborhood.list</field>
         <field name="model">hacienda.neighborhood</field>
-        <field name="type">list</field>
         <field name="arch" type="xml">
             <list>
                 <field name="code"/>
