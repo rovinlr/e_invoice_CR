@@ -3,13 +3,13 @@
     <record id="view_move_payment_method_list" model="ir.ui.view">
         <field name="name">hacienda.move.payment.method.list</field>
         <field name="model">hacienda.move.payment.method</field>
-        <field name="type">list</field>
+        <field name="type">tree</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
+            <tree editable="bottom">
                 <field name="code"/>
                 <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
-                <field name="amount" widget="monetary"/>
-            </list>
+                <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+            </tree>
         </field>
     </record>
 
@@ -47,7 +47,7 @@
                             <tree editable="bottom">
                                 <field name="code"/>
                                 <field name="description" modifiers="{'invisible': [['code','!=','99']], 'required': [['code','=','99']]}"/>
-                                <field name="amount" widget="monetary"/>
+                                <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </tree>
                             <form>
                                 <group>
