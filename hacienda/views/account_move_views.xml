@@ -3,7 +3,7 @@
     <record id="view_move_payment_method_list" model="ir.ui.view">
         <field name="name">hacienda.move.payment.method.list</field>
         <field name="model">hacienda.move.payment.method</field>
-        <field name="type">tree</field>
+        <field name="type">list</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="code"/>
