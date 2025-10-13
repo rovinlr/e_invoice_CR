@@ -5,11 +5,11 @@
         <field name="model">hacienda.cabys</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <list string="Códigos CABYS" create="false" edit="false">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="tax_rate"/>
-                <field name="active"/>
+                <field name="active" optional="hide"/>
             </list>
         </field>
     </record>
@@ -31,12 +31,24 @@
         </field>
     </record>
 
+    <record id="view_hacienda_cabys_search" model="ir.ui.view">
+        <field name="name">hacienda.cabys.search</field>
+        <field name="model">hacienda.cabys</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Códigos CABYS">
+                <field name="code" filter_domain="['|', ('code', 'ilike', self), ('name', 'ilike', self)]"/>
+                <filter string="Activos" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactivos" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
     <record id="view_hacienda_measurement_unit_tree" model="ir.ui.view">
         <field name="name">hacienda.measurement.unit.list</field>
         <field name="model">hacienda.measurement.unit</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <list string="Unidades Hacienda" create="false" edit="false">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="uom_id"/>
@@ -53,10 +65,20 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="uom_id"/>
+                        <field name="uom_id" options="{'no_create': True, 'no_create_edit': True}"/>
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_measurement_unit_search" model="ir.ui.view">
+        <field name="name">hacienda.measurement.unit.search</field>
+        <field name="model">hacienda.measurement.unit</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Unidades Hacienda">
+                <field name="code" filter_domain="['|', ('code', 'ilike', self), ('name', 'ilike', self)]"/>
+            </search>
         </field>
     </record>
 
@@ -65,7 +87,7 @@
         <field name="model">hacienda.canton</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <list string="Cantones" create="false" edit="false">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="province_id"/>
@@ -82,10 +104,21 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="province_id"/>
+                        <field name="province_id" options="{'no_create': True, 'no_create_edit': True}"/>
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_canton_search" model="ir.ui.view">
+        <field name="name">hacienda.canton.search</field>
+        <field name="model">hacienda.canton</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Cantones">
+                <field name="code" filter_domain="['|', ('code', 'ilike', self), ('name', 'ilike', self)]"/>
+                <field name="province_id"/>
+            </search>
         </field>
     </record>
 
@@ -94,7 +127,7 @@
         <field name="model">hacienda.district</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <list string="Distritos" create="false" edit="false">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="canton_id"/>
@@ -111,10 +144,21 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="canton_id"/>
+                        <field name="canton_id" options="{'no_create': True, 'no_create_edit': True}"/>
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_district_search" model="ir.ui.view">
+        <field name="name">hacienda.district.search</field>
+        <field name="model">hacienda.district</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Distritos">
+                <field name="code" filter_domain="['|', ('code', 'ilike', self), ('name', 'ilike', self)]"/>
+                <field name="canton_id"/>
+            </search>
         </field>
     </record>
 
@@ -123,7 +167,7 @@
         <field name="model">hacienda.neighborhood</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <list string="Barrios" create="false" edit="false">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="district_id"/>
@@ -140,10 +184,21 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="district_id"/>
+                        <field name="district_id" options="{'no_create': True, 'no_create_edit': True}"/>
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_neighborhood_search" model="ir.ui.view">
+        <field name="name">hacienda.neighborhood.search</field>
+        <field name="model">hacienda.neighborhood</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Barrios">
+                <field name="code" filter_domain="['|', ('code', 'ilike', self), ('name', 'ilike', self)]"/>
+                <field name="district_id"/>
+            </search>
         </field>
     </record>
 </odoo>

@@ -6,12 +6,16 @@
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
-                <page name="hacienda_settings" string="Hacienda">
-                    <group>
-                        <field name="cr_use_xml_44"/>
-                        <field name="cr_electronic_document_type">
-                            <attribute name="modifiers">{"required": [["cr_use_xml_44", "=", true]]}</attribute>
-                        </field>
+                <page name="hacienda_settings" string="Hacienda" groups="account.group_account_invoice">
+                    <group attrs="{'invisible': [('type', 'not in', ('sale', 'purchase'))]}" col="2">
+                        <group>
+                            <field name="cr_use_xml_44"/>
+                            <field name="cr_electronic_document_type" attrs="{'required': [('cr_use_xml_44', '=', True)], 'readonly': [('cr_use_xml_44', '=', False)]}"/>
+                        </group>
+                        <group attrs="{'invisible': [('cr_use_xml_44', '=', False)]}">
+                            <label for="cr_electronic_document_type" string="Información"/>
+                            <p class="o_form_label">Seleccione el tipo de comprobante electrónico que emitirá desde este diario.</p>
+                        </group>
                     </group>
                 </page>
             </xpath>
