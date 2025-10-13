@@ -3,6 +3,7 @@
     <record id="view_move_payment_method_list" model="ir.ui.view">
         <field name="name">hacienda.move.payment.method.list</field>
         <field name="model">hacienda.move.payment.method</field>
+        <field name="type">list</field>
         <field name="arch" type="xml">
             <list editable="bottom">
                 <field name="code"/>
@@ -15,6 +16,7 @@
     <record id="view_move_payment_method_form" model="ir.ui.view">
         <field name="name">hacienda.move.payment.method.form</field>
         <field name="model">hacienda.move.payment.method</field>
+        <field name="type">form</field>
         <field name="arch" type="xml">
             <form>
                 <group>
@@ -31,6 +33,7 @@
         <field name="name">account.move.form.hacienda</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="type">form</field>
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="Hacienda" name="cr_hacienda">
