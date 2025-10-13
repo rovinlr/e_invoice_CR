@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <list editable="bottom">
                 <field name="code"/>
-                <field name="description" attrs="{'invisible': [('code','!=','99')], 'required': [('code','=','99')]}"/>
+                <field name="description" modifiers='{"invisible": [["code","!=","99"]], "required": [["code","=","99"]]}'/>
                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
             </list>
         </field>
@@ -20,7 +20,7 @@
                 <group>
                     <field name="sequence" widget="handle" optional="hide"/>
                     <field name="code"/>
-                    <field name="description" attrs="{'invisible': [('code','!=','99')], 'required': [('code','=','99')]}"/>
+                    <field name="description" modifiers='{"invisible": [["code","!=","99"]], "required": [["code","=","99"]]}'/>
                     <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 </group>
             </form>
@@ -37,22 +37,22 @@
                     <group>
                         <group>
                             <field name="cr_sale_condition"/>
-                            <field name="cr_sale_condition_other" attrs="{'invisible': [('cr_sale_condition','!=','99')], 'required': [('cr_sale_condition','=','99')]}"/>
-                            <field name="cr_credit_term" attrs="{'invisible': [('cr_sale_condition','not in', ['02','10'])], 'required': [('cr_sale_condition','in', ['02','10'])]}"/>
+                            <field name="cr_sale_condition_other" modifiers='{"invisible": [["cr_sale_condition","!=","99"]], "required": [["cr_sale_condition","=","99"]]}'/>
+                            <field name="cr_credit_term" modifiers='{"invisible": [["cr_sale_condition","not in",["02","10"]]], "required": [["cr_sale_condition","in",["02","10"]]]}'/>
                         </group>
                     </group>
                     <group>
                         <field name="cr_payment_method_line_ids" nolabel="1" context="{'default_move_id': active_id}">
                             <list editable="bottom">
                                 <field name="code"/>
-                                <field name="description" attrs="{'invisible': [('code','!=','99')], 'required': [('code','=','99')]}"/>
+                                <field name="description" modifiers='{"invisible": [["code","!=","99"]], "required": [["code","=","99"]]}'/>
                                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </list>
                             <form>
                                 <group>
                                     <field name="sequence" widget="handle" optional="hide"/>
                                     <field name="code"/>
-                                    <field name="description" attrs="{'invisible': [('code','!=','99')], 'required': [('code','=','99')]}"/>
+                                    <field name="description" modifiers='{"invisible": [["code","!=","99"]], "required": [["code","=","99"]]}'/>
                                     <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 </group>
                             </form>
