@@ -3,6 +3,7 @@
     <record id="view_hacienda_electronic_document_tree" model="ir.ui.view">
         <field name="name">hacienda.electronic.document.list</field>
         <field name="model">hacienda.electronic.document</field>
+        <field name="type">list</field>
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
