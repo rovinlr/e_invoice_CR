@@ -5,10 +5,10 @@
         <field name="model">hacienda.electronic.document</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list>
+            <list string="Documentos electrónicos" decoration-success="state == 'accepted'" decoration-danger="state == 'rejected'" decoration-warning="state == 'error'">
                 <field name="name"/>
                 <field name="move_id"/>
-                <field name="journal_id"/>
+                <field name="journal_id" optional="hide"/>
                 <field name="state"/>
                 <field name="send_date"/>
                 <field name="response_date"/>
@@ -21,12 +21,15 @@
         <field name="model">hacienda.electronic.document</field>
         <field name="arch" type="xml">
             <form string="Documento electrónico">
+                <header>
+                    <button name="action_send_to_hacienda" type="object" string="Enviar a Hacienda" class="btn-primary" modifiers="{'invisible': [['state', '!=', 'draft']]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,accepted,rejected,error"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="name"/>
                         <field name="move_id" options="{'no_open': False}"/>
                         <field name="journal_id" readonly="1"/>
-                        <field name="state"/>
                         <field name="send_date"/>
                         <field name="response_date"/>
                         <field name="message" widget="text" placeholder="Mensaje devuelto por Hacienda"/>
@@ -43,6 +46,22 @@
                     </notebook>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_hacienda_electronic_document_search" model="ir.ui.view">
+        <field name="name">hacienda.electronic.document.search</field>
+        <field name="model">hacienda.electronic.document</field>
+        <field name="arch" type="xml">
+            <search string="Buscar documentos electrónicos">
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('move_id.name', 'ilike', self)]"/>
+                <field name="journal_id"/>
+                <filter name="state_draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_sent" string="Enviados" domain="[('state', '=', 'sent')]"/>
+                <filter name="state_accepted" string="Aceptados" domain="[('state', '=', 'accepted')]"/>
+                <filter name="state_rejected" string="Rechazados" domain="[('state', '=', 'rejected')]"/>
+                <filter name="state_error" string="Errores" domain="[('state', '=', 'error')]"/>
+            </search>
         </field>
     </record>
 </odoo>
