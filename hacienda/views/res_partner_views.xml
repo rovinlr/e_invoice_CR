@@ -8,7 +8,7 @@
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="hacienda_identification_type"/>
                 <field name="hacienda_identification"/>
-                <button name="action_fetch_hacienda_identification" type="object" string="Consultar Hacienda" class="oe_highlight" modifiers="{'invisible': [['hacienda_identification', '=', False]]}"/>
+                <button name="action_fetch_hacienda_identification" type="object" string="Consultar Hacienda" class="oe_highlight" attrs="{'invisible': [('hacienda_identification', '=', False)]}"/>
             </xpath>
             <xpath expr="//group[.//field[@name='zip']]" position="inside">
                 <group string="Localización Hacienda" col="2">

@@ -7,12 +7,12 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
                 <page name="hacienda_settings" string="Hacienda" groups="account.group_account_invoice">
-                    <group modifiers="{'invisible': [['type', 'not in', ['sale', 'purchase']]]}" col="2">
+                    <group attrs="{'invisible': [('type', 'not in', ('sale', 'purchase'))]}" col="2">
                         <group>
                             <field name="cr_use_xml_44"/>
-                            <field name="cr_electronic_document_type" modifiers="{'required': [['cr_use_xml_44', '=', True]], 'readonly': [['cr_use_xml_44', '=', False]]}"/>
+                            <field name="cr_electronic_document_type" attrs="{'required': [('cr_use_xml_44', '=', True)], 'readonly': [('cr_use_xml_44', '=', False)]}"/>
                         </group>
-                        <group modifiers="{'invisible': [['cr_use_xml_44', '=', False]]}">
+                        <group attrs="{'invisible': [('cr_use_xml_44', '=', False)]}">
                             <label for="cr_electronic_document_type" string="Información"/>
                             <p class="o_form_label">Seleccione el tipo de comprobante electrónico que emitirá desde este diario.</p>
                         </group>

@@ -39,15 +39,15 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="Hacienda" name="cr_hacienda" modifiers="{'invisible': [['move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund']]]}">
-                    <group modifiers="{'invisible': [['move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund']]]}">
+                <page string="Hacienda" name="cr_hacienda" attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))]}">
+                    <group attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))]}">
                         <group>
                             <field name="cr_sale_condition"/>
                             <field name="cr_sale_condition_other" modifiers="{'invisible': [['cr_sale_condition','!=','99']], 'required': [['cr_sale_condition','=','99']]}"/>
                             <field name="cr_credit_term" modifiers="{'invisible': [['cr_sale_condition','not in',['02','10']]], 'required': [['cr_sale_condition','in',['02','10']]]}"/>
                         </group>
                     </group>
-                    <group modifiers="{'invisible': [['move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund']]]}">
+                    <group attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice', 'in_refund'))]}">
                         <field name="cr_payment_method_line_ids" nolabel="1" context="{'default_move_id': active_id}">
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle" optional="hide"/>
