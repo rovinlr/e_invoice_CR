@@ -31,6 +31,7 @@
         <field name="name">account.move.form.hacienda</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="type">form</field>
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="Hacienda" name="cr_hacienda">
