@@ -2,7 +2,7 @@
     "name": "Hacienda - Costa Rica Electronic Invoicing",
     "summary": "Adds Costa Rican electronic invoicing support (XML 4.4) for Odoo 19.",
     "description": """Costa Rican localization helpers for electronic invoicing (XML schema 4.4).\nIncludes journals, taxes, products, partners and electronic document management.""",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.0.1",
     "category": "Accounting",
     "author": "OpenAI Assistant",
     "website": "https://www.hacienda.go.cr/",
