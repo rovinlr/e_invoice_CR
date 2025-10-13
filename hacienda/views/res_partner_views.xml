@@ -8,13 +8,13 @@
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="hacienda_identification_type"/>
                 <field name="hacienda_identification"/>
-                <button name="action_fetch_hacienda_identification" type="object" string="Consultar Hacienda" class="oe_highlight"/>
+                <button name="action_fetch_hacienda_identification" type="object" string="Consultar Hacienda" class="oe_highlight" attrs="{'invisible': [('hacienda_identification', '=', False)]}"/>
             </xpath>
             <xpath expr="//group[.//field[@name='zip']]" position="inside">
-                <group string="Localización Hacienda">
-                    <field name="hacienda_canton_id" options="{'no_create': False}"/>
-                    <field name="hacienda_district_id" domain="[('canton_id', '=', hacienda_canton_id)]" options="{'no_create': False}"/>
-                    <field name="hacienda_neighborhood_id" domain="[('district_id', '=', hacienda_district_id)]" options="{'no_create': False}"/>
+                <group string="Localización Hacienda" col="2">
+                    <field name="hacienda_canton_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                    <field name="hacienda_district_id" domain="[('canton_id', '=', hacienda_canton_id)]" options="{'no_create': True, 'no_create_edit': True}"/>
+                    <field name="hacienda_neighborhood_id" domain="[('district_id', '=', hacienda_district_id)]" options="{'no_create': True, 'no_create_edit': True}"/>
                     <field name="hacienda_activity_code"/>
                 </group>
             </xpath>
