@@ -4,14 +4,14 @@
         <field name="name">hacienda.electronic.document.list</field>
         <field name="model">hacienda.electronic.document</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="move_id"/>
                 <field name="journal_id"/>
                 <field name="state"/>
                 <field name="send_date"/>
                 <field name="response_date"/>
-            </tree>
+            </list>
         </field>
     </record>
 
