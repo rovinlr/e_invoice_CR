@@ -22,7 +22,7 @@
         <field name="arch" type="xml">
             <form string="Documento electrónico">
                 <header>
-                    <button name="action_send_to_hacienda" type="object" string="Enviar a Hacienda" class="btn-primary" states="draft"/>
+                    <button name="action_send_to_hacienda" type="object" string="Enviar a Hacienda" class="btn-primary" invisible="state != 'draft'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,accepted,rejected,error"/>
                 </header>
                 <sheet>
