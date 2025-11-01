@@ -3,16 +3,16 @@
     <record id="view_hacienda_electronic_document_tree" model="ir.ui.view">
         <field name="name">hacienda.electronic.document.list</field>
         <field name="model">hacienda.electronic.document</field>
-        <field name="type">list</field>
+        <field name="type">tree</field>
         <field name="arch" type="xml">
-            <list string="Documentos electrónicos" decoration-success="state == 'accepted'" decoration-danger="state == 'rejected'" decoration-warning="state == 'error'">
+            <tree string="Documentos electrónicos" decoration-success="state == 'accepted'" decoration-danger="state == 'rejected'" decoration-warning="state == 'error'">
                 <field name="name"/>
                 <field name="move_id"/>
                 <field name="journal_id" optional="hide"/>
                 <field name="state"/>
                 <field name="send_date"/>
                 <field name="response_date"/>
-            </list>
+            </tree>
         </field>
     </record>
 
