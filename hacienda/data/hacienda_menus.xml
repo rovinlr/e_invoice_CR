@@ -36,6 +36,15 @@
 
     <menuitem id="menu_hacienda_measurement_units" name="Unidades de Medida" parent="menu_hacienda_root" sequence="40" action="action_hacienda_measurement_units"/>
 
+    <record id="action_hacienda_provinces" model="ir.actions.act_window">
+        <field name="name">Provincias</field>
+        <field name="res_model">res.country.state</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="hacienda.view_hacienda_province_tree"/>
+        <field name="domain">[('country_id', '=', ref('base.cr'))]</field>
+        <field name="context">{'default_country_id': ref('base.cr')}</field>
+    </record>
+
     <record id="action_hacienda_cantons" model="ir.actions.act_window">
         <field name="name">Cantones</field>
         <field name="res_model">hacienda.canton</field>
@@ -55,6 +64,7 @@
     </record>
 
     <menuitem id="menu_hacienda_geo" name="Ubicaciones" parent="menu_hacienda_root" sequence="50"/>
+    <menuitem id="menu_hacienda_geo_provinces" name="Provincias" parent="menu_hacienda_geo" action="action_hacienda_provinces"/>
     <menuitem id="menu_hacienda_geo_cantons" name="Cantones" parent="menu_hacienda_geo" action="action_hacienda_cantons"/>
     <menuitem id="menu_hacienda_geo_districts" name="Distritos" parent="menu_hacienda_geo" action="action_hacienda_districts"/>
     <menuitem id="menu_hacienda_geo_neighborhoods" name="Barrios" parent="menu_hacienda_geo" action="action_hacienda_neighborhoods"/>
