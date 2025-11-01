@@ -11,9 +11,13 @@
                         <setting id="hacienda_credentials" string="Credenciales Hacienda">
                             <div class="text-muted">Configura la conexión con los servicios del Ministerio de Hacienda.</div>
                             <div class="content-group mt16">
+                                <label for="hacienda_api_base_url" string="URL API de Hacienda"/>
                                 <field name="hacienda_api_base_url" placeholder="https://api.comprobanteselectronicos.go.cr"/>
+                                <label for="hacienda_username" string="Usuario"/>
                                 <field name="hacienda_username"/>
+                                <label for="hacienda_password" string="Contraseña"/>
                                 <field name="hacienda_password" password="True"/>
+                                <label for="hacienda_certificate_pin" string="PIN del certificado"/>
                                 <field name="hacienda_certificate_pin" password="True"/>
                                 <field name="hacienda_cert_key" filename="hacienda_cert_key_filename" widget="binary" options="{'no_open': True}"/>
                             </div>
