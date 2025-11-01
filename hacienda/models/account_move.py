@@ -27,6 +27,18 @@ class AccountMove(models.Model):
     DS_NS = "http://www.w3.org/2000/09/xmldsig#"
     XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
     XADES_NS = "http://uri.etsi.org/01903/v1.3.2#"
+    HACIENDA_DOCUMENT_TYPE_MAP = {
+        "FE": "01",
+        "ND": "02",
+        "NC": "03",
+        "TE": "04",
+        "CCE": "05",
+        "CPCE": "06",
+        "RCE": "07",
+        "REP": "08",
+        "FEE": "09",
+        "FEC": "10",
+    }
 
     cr_sale_condition = fields.Selection(
         selection=lambda self: self._selection_cr_sale_condition(),
@@ -45,6 +57,18 @@ class AccountMove(models.Model):
         comodel_name="hacienda.move.payment.method",
         inverse_name="move_id",
         string="Medios de pago Hacienda",
+    )
+    hacienda_document_ids = fields.One2many(
+        comodel_name="hacienda.electronic.document",
+        inverse_name="move_id",
+        string="Documentos electrónicos Hacienda",
+        readonly=True,
+    )
+    hacienda_document_state = fields.Selection(
+        selection=lambda self: self._selection_hacienda_document_state(),
+        string="Estado Hacienda",
+        compute="_compute_hacienda_document_state",
+        store=False,
     )
 
     def action_post(self):
@@ -90,6 +114,23 @@ class AccountMove(models.Model):
                 document = Document.create(document_values)
             document.action_send_to_hacienda()
 
+    @api.model
+    def _selection_hacienda_document_state(self):
+        return self.env["hacienda.electronic.document"]._fields["state"].selection
+
+    def _compute_hacienda_document_state(self):
+        if not self:
+            return
+        documents = self.env["hacienda.electronic.document"].search(
+            [("move_id", "in", self.ids)], order="create_date desc"
+        )
+        documents_by_move = {}
+        for document in documents:
+            documents_by_move.setdefault(document.move_id.id, document)
+        for move in self:
+            document = documents_by_move.get(move.id)
+            move.hacienda_document_state = document.state if document else False
+
     def _get_default_hacienda_document_name(self):
         prefix = getattr(self, "sequence_prefix", False) or "Factura-"
         return prefix + fields.Datetime.now().strftime("%Y%m%d%H%M%S")
@@ -126,7 +167,56 @@ class AccountMove(models.Model):
         return (self.name or self.ref or "00000000000000000000").replace("/", "")[:50]
 
     def _compute_hacienda_sequence(self):
-        return (self.name or self.ref or "1").replace("/", "")
+        self.ensure_one()
+        journal = self.journal_id
+        if not journal or not journal.cr_use_xml_44:
+            return (self.name or self.ref or "1").replace("/", "")
+
+        branch_digits = self._clean_numeric_code(journal.cr_branch_number)
+        if not branch_digits:
+            raise UserError(
+                "Configure el número de sucursal en el diario para poder generar el consecutivo Hacienda."
+            )
+        if len(branch_digits) > 3:
+            raise UserError("El número de sucursal debe tener máximo 3 dígitos para Hacienda.")
+        branch = branch_digits.zfill(3)
+
+        terminal_digits = self._clean_numeric_code(journal.cr_terminal_number)
+        if not terminal_digits:
+            raise UserError(
+                "Configure el número de terminal en el diario para poder generar el consecutivo Hacienda."
+            )
+        if len(terminal_digits) > 5:
+            raise UserError("El número de terminal debe tener máximo 5 dígitos para Hacienda.")
+        terminal = terminal_digits.zfill(5)
+
+        document_type_code = self._get_hacienda_document_type_code()
+
+        sequence_source = self.name or self.ref or "1"
+        sequence_digits = "".join(ch for ch in sequence_source if ch.isdigit()) or "1"
+        sequence_digits = sequence_digits[-10:]
+        sequence = sequence_digits.zfill(10)
+
+        return f"{branch}{terminal}{document_type_code}{sequence}"
+
+    def _get_hacienda_document_type_code(self):
+        self.ensure_one()
+        journal = self.journal_id
+        if not journal:
+            raise UserError("El asiento contable no tiene un diario configurado para Hacienda.")
+        doc_type = journal.cr_electronic_document_type
+        if not doc_type:
+            raise UserError(
+                "Configure el tipo de documento electrónico en el diario para poder generar el consecutivo Hacienda."
+            )
+        doc_code = self.HACIENDA_DOCUMENT_TYPE_MAP.get(doc_type)
+        if not doc_code:
+            _logger.warning(
+                "Tipo de documento electrónico %s sin mapeo definido; se usará '01' por defecto.",
+                doc_type,
+            )
+            doc_code = "01"
+        return doc_code
 
     def _build_hacienda_xml_tree(self, emission_date):
         nsmap = {

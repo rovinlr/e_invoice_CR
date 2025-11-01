@@ -8,7 +8,8 @@
             <list editable="bottom">
                 <field name="sequence" widget="handle" optional="hide"/>
                 <field name="code"/>
-                <field name="description" invisible="code != '99'" required="code == '99'"/>
+                <field name="description"
+                       modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
             </list>
         </field>
@@ -24,7 +25,8 @@
                     <group>
                         <field name="sequence" widget="handle" optional="hide"/>
                         <field name="code"/>
-                        <field name="description" invisible="code != '99'" required="code == '99'"/>
+                        <field name="description"
+                               modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                         <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                     </group>
                 </sheet>
@@ -39,20 +41,27 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="Hacienda" name="cr_hacienda" invisible="move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund')">
-                    <group invisible="move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund')">
+                <page string="Hacienda" name="cr_hacienda"
+                      modifiers="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}">
+                    <group modifiers="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}">
+                        <group>
+                            <field name="hacienda_document_state" readonly="1"/>
+                        </group>
                         <group>
                             <field name="cr_sale_condition"/>
-                            <field name="cr_sale_condition_other" invisible="cr_sale_condition != '99'" required="cr_sale_condition == '99'"/>
-                            <field name="cr_credit_term" invisible="cr_sale_condition not in ('02', '10')" required="cr_sale_condition in ('02', '10')"/>
+                            <field name="cr_sale_condition_other"
+                                   modifiers="{'invisible': [('cr_sale_condition', '!=', '99')], 'required': [('cr_sale_condition', '=', '99')]}"/>
+                            <field name="cr_credit_term"
+                                   modifiers="{'invisible': [('cr_sale_condition', 'not in', ['02', '10'])], 'required': [('cr_sale_condition', 'in', ['02', '10'])]}"/>
                         </group>
                     </group>
-                    <group invisible="move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund')">
+                    <group modifiers="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}">
                         <field name="cr_payment_method_line_ids" nolabel="1">
                             <list editable="bottom">
                                 <field name="sequence" widget="handle" optional="hide"/>
                                 <field name="code"/>
-                                <field name="description" invisible="code != '99'" required="code == '99'"/>
+                                <field name="description"
+                                       modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             </list>
                             <form>
@@ -60,7 +69,8 @@
                                     <group>
                                         <field name="sequence" widget="handle" optional="hide"/>
                                         <field name="code"/>
-                                        <field name="description" invisible="code != '99'" required="code == '99'"/>
+                                        <field name="description"
+                                               modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                                         <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     </group>
                                 </sheet>
@@ -68,6 +78,18 @@
                         </field>
                     </group>
                 </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_tree_hacienda_state" model="ir.ui.view">
+        <field name="name">account.move.tree.hacienda.state</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="hacienda_document_state" optional="show"
+                       modifiers="{'column_invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}"/>
             </xpath>
         </field>
     </record>
