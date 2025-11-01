@@ -3,7 +3,7 @@ import logging
 
 import requests
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -12,20 +12,28 @@ _logger = logging.getLogger(__name__)
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
+    hacienda_province_id = fields.Many2one(
+        comodel_name="res.country.state",
+        string="Provincia",
+        help="Provincia según el catálogo oficial de Hacienda.",
+    )
     hacienda_canton_id = fields.Many2one(
         comodel_name="hacienda.canton",
         string="Cantón",
         help="Cantón según el catálogo oficial de Hacienda.",
+        domain="[('province_id', '=', hacienda_province_id)]",
     )
     hacienda_district_id = fields.Many2one(
         comodel_name="hacienda.district",
         string="Distrito",
         help="Distrito según el catálogo oficial de Hacienda.",
+        domain="[('canton_id', '=', hacienda_canton_id)]",
     )
     hacienda_neighborhood_id = fields.Many2one(
         comodel_name="hacienda.neighborhood",
         string="Barrio",
         help="Barrio según el catálogo oficial de Hacienda.",
+        domain="[('district_id', '=', hacienda_district_id)]",
     )
     hacienda_activity_code = fields.Char(
         string="Código actividad económica",
@@ -91,9 +99,17 @@ class ResPartner(models.Model):
                         "zip": address.get("codigo_postal") or address.get("zip"),
                     }
                 )
+                province_code = address.get("provincia") or address.get("province")
                 canton_code = address.get("canton")
                 district_code = address.get("distrito")
                 neighborhood_code = address.get("barrio")
+
+                if province_code:
+                    province = self.env["res.country.state"].search([("code", "=", province_code)], limit=1)
+                    if not province:
+                        province = self.env["res.country.state"].search([("name", "ilike", province_code)], limit=1)
+                    if province:
+                        partner_values["hacienda_province_id"] = province.id
 
                 if canton_code:
                     canton = self.env["hacienda.canton"].search([("code", "=", canton_code)], limit=1)
@@ -112,3 +128,18 @@ class ResPartner(models.Model):
 
             if partner_values:
                 partner.write(partner_values)
+
+    @api.onchange("hacienda_province_id")
+    def _onchange_hacienda_province_id(self):
+        self.hacienda_canton_id = False
+        self.hacienda_district_id = False
+        self.hacienda_neighborhood_id = False
+
+    @api.onchange("hacienda_canton_id")
+    def _onchange_hacienda_canton_id(self):
+        self.hacienda_district_id = False
+        self.hacienda_neighborhood_id = False
+
+    @api.onchange("hacienda_district_id")
+    def _onchange_hacienda_district_id(self):
+        self.hacienda_neighborhood_id = False

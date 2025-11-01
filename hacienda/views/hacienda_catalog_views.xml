@@ -5,7 +5,7 @@
         <field name="model">hacienda.cabys</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list string="Códigos CABYS" create="false" edit="false">
+            <list string="Códigos CABYS">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="tax_rate"/>
@@ -48,7 +48,7 @@
         <field name="model">hacienda.measurement.unit</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list string="Unidades Hacienda" create="false" edit="false">
+            <list string="Unidades Hacienda">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="uom_id"/>
@@ -65,7 +65,7 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="uom_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                        <field name="uom_id"/>
                     </group>
                 </sheet>
             </form>
@@ -82,12 +82,41 @@
         </field>
     </record>
 
+    <record id="view_hacienda_province_tree" model="ir.ui.view">
+        <field name="name">hacienda.province.list</field>
+        <field name="model">res.country.state</field>
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+            <list string="Provincias">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="country_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hacienda_province_form" model="ir.ui.view">
+        <field name="name">hacienda.province.form</field>
+        <field name="model">res.country.state</field>
+        <field name="arch" type="xml">
+            <form string="Provincia">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="country_id" domain="[('code', '=', 'CR')]"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="view_hacienda_canton_tree" model="ir.ui.view">
         <field name="name">hacienda.canton.list</field>
         <field name="model">hacienda.canton</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list string="Cantones" create="false" edit="false">
+            <list string="Cantones">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="province_id"/>
@@ -104,7 +133,7 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="province_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                        <field name="province_id" domain="[('country_id.code', '=', 'CR')]"/>
                     </group>
                 </sheet>
             </form>
@@ -127,7 +156,7 @@
         <field name="model">hacienda.district</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list string="Distritos" create="false" edit="false">
+            <list string="Distritos">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="canton_id"/>
@@ -144,7 +173,7 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="canton_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                        <field name="canton_id"/>
                     </group>
                 </sheet>
             </form>
@@ -167,7 +196,7 @@
         <field name="model">hacienda.neighborhood</field>
         <field name="type">list</field>
         <field name="arch" type="xml">
-            <list string="Barrios" create="false" edit="false">
+            <list string="Barrios">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="district_id"/>
@@ -184,7 +213,7 @@
                     <group>
                         <field name="code"/>
                         <field name="name"/>
-                        <field name="district_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                        <field name="district_id"/>
                     </group>
                 </sheet>
             </form>
