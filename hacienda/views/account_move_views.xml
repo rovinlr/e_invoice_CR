@@ -3,15 +3,15 @@
     <record id="view_move_payment_method_list" model="ir.ui.view">
         <field name="name">hacienda.move.payment.method.list</field>
         <field name="model">hacienda.move.payment.method</field>
-        <field name="type">tree</field>
+        <field name="type">list</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="sequence" widget="handle" optional="hide"/>
                 <field name="code"/>
                 <field name="description"
                        modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -60,13 +60,13 @@
                     </group>
                     <group modifiers="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}">
                         <field name="cr_payment_method_line_ids" nolabel="1">
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="sequence" widget="handle" optional="hide"/>
                                 <field name="code"/>
                                 <field name="description"
                                        modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            </tree>
+                            </list>
                             <form>
                                 <sheet>
                                     <group>
