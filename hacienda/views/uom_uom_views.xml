@@ -3,7 +3,7 @@
     <record id="view_uom_tree_inherit_hacienda" model="ir.ui.view">
         <field name="name">uom.uom.list.hacienda</field>
         <field name="model">uom.uom</field>
-        <field name="inherit_id" ref="uom.uom_uom_tree"/>
+        <field name="inherit_id" ref="uom.product_uom_tree_view"/>
         <field name="arch" type="xml">
             <xpath expr="((//tree | //list)//field[@name='name'] | (//tree | //list)//field[@name='display_name'] | (//tree | //list)//field[@name='category_id'])[1]" position="before">
                 <field name="hacienda_measurement_unit_codes" optional="hide" readonly="1"/>
