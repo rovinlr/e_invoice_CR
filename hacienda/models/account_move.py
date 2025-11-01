@@ -27,6 +27,18 @@ class AccountMove(models.Model):
     DS_NS = "http://www.w3.org/2000/09/xmldsig#"
     XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
     XADES_NS = "http://uri.etsi.org/01903/v1.3.2#"
+    HACIENDA_DOCUMENT_TYPE_MAP = {
+        "FE": "01",
+        "ND": "02",
+        "NC": "03",
+        "TE": "04",
+        "CCE": "05",
+        "CPCE": "06",
+        "RCE": "07",
+        "REP": "08",
+        "FEE": "09",
+        "FEC": "10",
+    }
 
     cr_sale_condition = fields.Selection(
         selection=lambda self: self._selection_cr_sale_condition(),
@@ -155,7 +167,56 @@ class AccountMove(models.Model):
         return (self.name or self.ref or "00000000000000000000").replace("/", "")[:50]
 
     def _compute_hacienda_sequence(self):
-        return (self.name or self.ref or "1").replace("/", "")
+        self.ensure_one()
+        journal = self.journal_id
+        if not journal or not journal.cr_use_xml_44:
+            return (self.name or self.ref or "1").replace("/", "")
+
+        branch_digits = self._clean_numeric_code(journal.cr_branch_number)
+        if not branch_digits:
+            raise UserError(
+                "Configure el número de sucursal en el diario para poder generar el consecutivo Hacienda."
+            )
+        if len(branch_digits) > 3:
+            raise UserError("El número de sucursal debe tener máximo 3 dígitos para Hacienda.")
+        branch = branch_digits.zfill(3)
+
+        terminal_digits = self._clean_numeric_code(journal.cr_terminal_number)
+        if not terminal_digits:
+            raise UserError(
+                "Configure el número de terminal en el diario para poder generar el consecutivo Hacienda."
+            )
+        if len(terminal_digits) > 5:
+            raise UserError("El número de terminal debe tener máximo 5 dígitos para Hacienda.")
+        terminal = terminal_digits.zfill(5)
+
+        document_type_code = self._get_hacienda_document_type_code()
+
+        sequence_source = self.name or self.ref or "1"
+        sequence_digits = "".join(ch for ch in sequence_source if ch.isdigit()) or "1"
+        sequence_digits = sequence_digits[-10:]
+        sequence = sequence_digits.zfill(10)
+
+        return f"{branch}{terminal}{document_type_code}{sequence}"
+
+    def _get_hacienda_document_type_code(self):
+        self.ensure_one()
+        journal = self.journal_id
+        if not journal:
+            raise UserError("El asiento contable no tiene un diario configurado para Hacienda.")
+        doc_type = journal.cr_electronic_document_type
+        if not doc_type:
+            raise UserError(
+                "Configure el tipo de documento electrónico en el diario para poder generar el consecutivo Hacienda."
+            )
+        doc_code = self.HACIENDA_DOCUMENT_TYPE_MAP.get(doc_type)
+        if not doc_code:
+            _logger.warning(
+                "Tipo de documento electrónico %s sin mapeo definido; se usará '01' por defecto.",
+                doc_type,
+            )
+            doc_code = "01"
+        return doc_code
 
     def _build_hacienda_xml_tree(self, emission_date):
         nsmap = {
