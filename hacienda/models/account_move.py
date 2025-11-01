@@ -46,6 +46,18 @@ class AccountMove(models.Model):
         inverse_name="move_id",
         string="Medios de pago Hacienda",
     )
+    hacienda_document_ids = fields.One2many(
+        comodel_name="hacienda.electronic.document",
+        inverse_name="move_id",
+        string="Documentos electrónicos Hacienda",
+        readonly=True,
+    )
+    hacienda_document_state = fields.Selection(
+        selection=lambda self: self._selection_hacienda_document_state(),
+        string="Estado Hacienda",
+        compute="_compute_hacienda_document_state",
+        store=False,
+    )
 
     def action_post(self):
         """Extend post to generate and send the electronic invoice to Hacienda."""
@@ -89,6 +101,23 @@ class AccountMove(models.Model):
                 document_values["move_id"] = move.id
                 document = Document.create(document_values)
             document.action_send_to_hacienda()
+
+    @api.model
+    def _selection_hacienda_document_state(self):
+        return self.env["hacienda.electronic.document"]._fields["state"].selection
+
+    def _compute_hacienda_document_state(self):
+        if not self:
+            return
+        documents = self.env["hacienda.electronic.document"].search(
+            [("move_id", "in", self.ids)], order="create_date desc"
+        )
+        documents_by_move = {}
+        for document in documents:
+            documents_by_move.setdefault(document.move_id.id, document)
+        for move in self:
+            document = documents_by_move.get(move.id)
+            move.hacienda_document_state = document.state if document else False
 
     def _get_default_hacienda_document_name(self):
         prefix = getattr(self, "sequence_prefix", False) or "Factura-"
