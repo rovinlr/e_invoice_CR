@@ -1,8 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hacienda_electronic_document_user,Hacienda Electronic Document,model_hacienda_electronic_document,base.group_user,1,1,1,0
-access_hacienda_cabys_user,Hacienda CABYS,model_hacienda_cabys,base.group_user,1,0,0,0
-access_hacienda_measurement_unit_user,Hacienda Measurement Unit,model_hacienda_measurement_unit,base.group_user,1,0,0,0
-access_hacienda_canton_user,Hacienda Canton,model_hacienda_canton,base.group_user,1,0,0,0
-access_hacienda_district_user,Hacienda District,model_hacienda_district,base.group_user,1,0,0,0
-access_hacienda_neighborhood_user,Hacienda Neighborhood,model_hacienda_neighborhood,base.group_user,1,0,0,0
+access_hacienda_cabys_user,Hacienda CABYS,model_hacienda_cabys,base.group_user,1,1,1,1
+access_hacienda_measurement_unit_user,Hacienda Measurement Unit,model_hacienda_measurement_unit,base.group_user,1,1,1,1
+access_hacienda_canton_user,Hacienda Canton,model_hacienda_canton,base.group_user,1,1,1,1
+access_hacienda_district_user,Hacienda District,model_hacienda_district,base.group_user,1,1,1,1
+access_hacienda_neighborhood_user,Hacienda Neighborhood,model_hacienda_neighborhood,base.group_user,1,1,1,1
 access_hacienda_move_payment_method_user,Hacienda Move Payment Method,model_hacienda_move_payment_method,base.group_user,1,1,1,0

@@ -21,7 +21,6 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "data/hacienda_menus.xml",
         "views/account_journal_views.xml",
         "views/account_move_views.xml",
         "views/account_tax_views.xml",
@@ -31,6 +30,7 @@
         "views/hacienda_document_views.xml",
         "views/hacienda_catalog_views.xml",
         "views/uom_uom_views.xml",
+        "data/hacienda_menus.xml",
     ],
     "application": True,
 }
