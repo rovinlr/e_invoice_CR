@@ -23,7 +23,7 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="sequence" widget="handle" optional="hide"/>
+                        <field name="sequence" optional="hide"/>
                         <field name="code"/>
                         <field name="description"
                                modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
@@ -60,17 +60,17 @@
                     </group>
                     <group modifiers="{'invisible': [('move_type', 'not in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]}">
                         <field name="cr_payment_method_line_ids" nolabel="1">
-                            <list editable="bottom">
+                            <tree editable="bottom">
                                 <field name="sequence" widget="handle" optional="hide"/>
                                 <field name="code"/>
                                 <field name="description"
                                        modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
                                 <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            </list>
+                            </tree>
                             <form>
                                 <sheet>
                                     <group>
-                                        <field name="sequence" widget="handle" optional="hide"/>
+                                        <field name="sequence" optional="hide"/>
                                         <field name="code"/>
                                         <field name="description"
                                                modifiers="{'invisible': [('code', '!=', '99')], 'required': [('code', '=', '99')]}"/>
